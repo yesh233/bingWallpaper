@@ -1,1 +1,1 @@
-download Bing wall paper and set wallpaper
+download Bing wallpaper and set wallpaper
