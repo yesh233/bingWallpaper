@@ -16,28 +16,28 @@ class ImageDownloader(object):
         self.__resolution_ratio = resolution_ratio
         self.__save_directory = save_directory
 
-    def get_image_url(self):
+    def __get_image_url(self):
         return self.__base_url + json.loads(urllib2.urlopen(self.__query_url).read())['images'][0]['urlbase']+'_' + \
             self.__resolution_ratio+'.jpg'
 
-    def get_save_directory(self):
+    def __get_save_directory(self):
         return os.path.expanduser('~')+self.__save_directory
 
-    def make_save_directory(self):
+    def __make_save_directory(self):
         try:
-            os.makedirs(self.get_save_directory())
+            os.makedirs(self.__get_save_directory())
         except OSError as exc:
-            if exc.errno == errno.EEXIST and os.path.isdir(self.get_save_directory()):
+            if exc.errno == errno.EEXIST and os.path.isdir(self.__get_save_directory()):
                 pass
         else:
             raise
 
     def get_image_save_path(self):
-        return self.get_save_directory()+time.strftime('%y-%m-%d')+'.jpg'
+        return self.__get_save_directory()+time.strftime('%y-%m-%d')+'.jpg'
 
     def download_image(self):
-        self.make_save_directory()
-        urllib.urlretrieve(self.get_image_url(), self.get_image_save_path())
+        self.__make_save_directory()
+        urllib.urlretrieve(self.__get_image_url(), self.get_image_save_path())
 
 
 class WallpaperSetter(object):
@@ -63,7 +63,8 @@ class BingWallpaper(object):
 
 def main():
     bing_wallpaper = BingWallpaper(ImageDownloader(config.wallpaper_query_url, config.bing_base_url,
-                                   config.resolution_ratio), WallpaperSetter(config.set_wallpaper_command))
+                                   config.resolution_ratio),
+                                   WallpaperSetter(config.set_wallpaper_command))
     bing_wallpaper.run()
 
 
