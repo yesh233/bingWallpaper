@@ -63,7 +63,7 @@ class BingWallpaper(object):
 
 def main():
     bing_wallpaper = BingWallpaper(ImageDownloader(config.wallpaper_query_url, config.bing_base_url,
-                                   config.resolution_ratio),
+                                                   config.resolution_ratio),
                                    WallpaperSetter(config.set_wallpaper_command))
     bing_wallpaper.run()
 
