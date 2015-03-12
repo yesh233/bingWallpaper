@@ -9,53 +9,63 @@ import os
 import errno
 
 
-def get_image_url(query_url=config.wallpaper_query_url, base_url=config.bing_base_url,
-                  resolution_ratio=config.resolution_ration):
-    return base_url + json.loads(urllib2.urlopen(query_url).read())['images'][0]['urlbase']+'_' + \
-        resolution_ratio+'.jpg'
+class ImageDownloader(object):
+    def __init__(self, query_url, base_url, resolution_ratio, save_directory):
+        self.__query_url = query_url
+        self.__base_url = base_url
+        self.__resolution_ratio = resolution_ratio
+        self.__save_directory = save_directory
 
+    def get_image_url(self):
+        return self.__base_url + json.loads(urllib2.urlopen(self.__query_url).read())['images'][0]['urlbase']+'_' + \
+            self.__resolution_ratio+'.jpg'
 
-def generate_save_path(images_path):
-    return images_path+time.strftime('%y-%m-%d')+'.jpg'
+    def get_save_directory(self):
+        return os.path.expanduser('~')+self.__save_directory
 
-
-def download_image(image_url, save_path):
-    urllib.urlretrieve(image_url, save_path)
-
-
-def set_wallpaper(save_path, set_wallpaper_command=config.set_wallpaper_command):
-    try:
-        os.system(set_wallpaper_command+'file://'+save_path)
-    except:
-        raise
-
-
-def makedir(path):
-    try:
-        os.makedirs(path)
-    except OSError as exc:
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
-            pass
+    def make_save_directory(self):
+        try:
+            os.makedirs(self.get_save_directory())
+        except OSError as exc:
+            if exc.errno == errno.EEXIST and os.path.isdir(self.get_save_directory()):
+                pass
         else:
             raise
 
+    def get_image_save_path(self):
+        return self.get_save_directory()+time.strftime('%y-%m-%d')+'.jpg'
 
-def generate_images_path(path=config.save_path):
-    return os.path.expanduser('~')+path
+    def download_image(self):
+        self.make_save_directory()
+        urllib.urlretrieve(self.get_image_url(), self.get_image_save_path())
 
 
-def test():
-    print get_image_url()
-    print generate_save_path(generate_images_path())
-    print set_wallpaper(generate_save_path(generate_images_path()))
+class WallpaperSetter(object):
+    def __init__(self, command):
+        self.__wallpaper_set_command = command
+
+    def set_wallpaper(self, image_path):
+        try:
+            os.system(self.__wallpaper_set_command+'file://'+image_path)
+        except:
+            raise
+
+
+class BingWallpaper(object):
+    def __init__(self, image_downloader, wallpapaper_setter):
+        self.__image_downloader = image_downloader
+        self.__walpaper_setter = wallpapaper_setter
+
+    def run(self):
+        self.__image_downloader.download_image()
+        self.__walpaper_setter.set_wallpaper(self.__image_downloader.get_image_save_path())
 
 
 def main():
-    makedir(generate_images_path())
-    download_image(get_image_url(), generate_save_path(generate_images_path()))
-    set_wallpaper(generate_save_path(generate_images_path()))
+    bing_wallpaper = BingWallpaper(ImageDownloader(config.wallpaper_query_url, config.bing_base_url,
+                                   config.resolution_ratio), WallpaperSetter(config.set_wallpaper_command))
+    bing_wallpaper.run()
 
 
 if __name__ == '__main__':
     main()
-    # test()
