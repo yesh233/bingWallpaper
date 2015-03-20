@@ -3,7 +3,6 @@ __author__ = 'yesh233'
 import unittest
 from wallpaper import *
 import subprocess
-import os
 
 
 class ImageDownloaderTestCase(unittest.TestCase):
