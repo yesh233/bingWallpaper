@@ -7,6 +7,7 @@ import json
 import time
 import os
 import errno
+import subprocess
 
 
 class ImageDownloader(object):
@@ -41,20 +42,20 @@ class ImageDownloader(object):
 
 
 class WallpaperSetter(object):
-    def __init__(self, command):
-        self.__wallpaper_set_command = command
+    def __init__(self, script_path):
+        self.__wallpaper_set_script_path = script_path
 
     def set_wallpaper(self, image_path):
         try:
-            os.system(self.__wallpaper_set_command+'file://'+image_path)
+            subprocess.call([self.__wallpaper_set_script_path, 'file://'+image_path])
         except:
             raise
 
 
 class BingWallpaper(object):
-    def __init__(self, image_downloader, wallpapaper_setter):
+    def __init__(self, image_downloader, wallpaper_setter):
         self.__image_downloader = image_downloader
-        self.__wallpaper_setter = wallpapaper_setter
+        self.__wallpaper_setter = wallpaper_setter
 
     def run(self):
         self.__image_downloader.download_image()
@@ -64,7 +65,7 @@ class BingWallpaper(object):
 def main():
     bing_wallpaper = BingWallpaper(ImageDownloader(config.wallpaper_query_url, config.bing_base_url,
                                                    config.resolution_ratio, config.save_directory),
-                                   WallpaperSetter(config.set_wallpaper_command))
+                                   WallpaperSetter(config.set_wallpaper_script_path))
     bing_wallpaper.run()
 
 

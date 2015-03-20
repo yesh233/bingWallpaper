@@ -1,8 +1,9 @@
 __author__ = 'yesh233'
 
 import unittest
-import config
 from wallpaper import *
+import subprocess
+import os
 
 
 class ImageDownloaderTestCase(unittest.TestCase):
@@ -25,6 +26,8 @@ class WallpaperSetterTestCase(unittest.TestCase):
     def tearDown(self):
         self.__wallpaper_setter = None
 
+    def test(self):
+        subprocess.call(['./wallpaper_setter.sh', 'file:///home/yesh233/.bingWallpaper/15-03-13.jpg'])
 
 if __name__ == '__main__':
     unittest.main()
