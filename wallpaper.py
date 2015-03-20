@@ -54,11 +54,11 @@ class WallpaperSetter(object):
 class BingWallpaper(object):
     def __init__(self, image_downloader, wallpapaper_setter):
         self.__image_downloader = image_downloader
-        self.__walpaper_setter = wallpapaper_setter
+        self.__wallpaper_setter = wallpapaper_setter
 
     def run(self):
         self.__image_downloader.download_image()
-        self.__walpaper_setter.set_wallpaper(self.__image_downloader.get_image_save_path())
+        self.__wallpaper_setter.set_wallpaper(self.__image_downloader.get_image_save_path())
 
 
 def main():
